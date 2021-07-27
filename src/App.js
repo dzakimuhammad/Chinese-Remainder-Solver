@@ -16,7 +16,7 @@ const useStyles = makeStyles((theme) => ({
   },
   button: {
     margin: theme.spacing(1),
-  }
+  },
 }))
 
 function App() {
@@ -25,11 +25,7 @@ function App() {
   const [inputFields, setInputFields] = useState([
     { id: 0, num: '', mod: '' },
   ]);
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log("InputFields", inputFields);
-  };
+  const [results, setResults] = useState({show: false, x: 0, m: 0, a:[], M : [], y: []});
 
   const handleChangeInput = (id, event) => {
     const newInputFields = inputFields.map(i => {
@@ -53,6 +49,61 @@ function App() {
     values.splice(values.findIndex(value => value.id === id), 1);
     setInputFields(values);
   }
+  
+  function modInverse(a, m){
+    for(let x = 1; x < m; x++)
+      if (((a % m) * x) % m === 1)
+        return x;
+  }
+
+  const displayArray = (arr) =>{
+    let displayArr = [];
+    for(let i=0; i<arr.length; i++){
+      if(i !== arr.length-1){
+        displayArr.push(arr[i].toString()+",");
+      }
+      else{
+        displayArr.push(arr[i].toString())
+      }
+    }
+    return displayArr;
+  }
+
+  const handleCRT = () => {
+    let m = 1;
+    let num = [];
+    let mod = [];
+    let M = [] ;
+    let y = [];
+    let x =0;
+    
+    inputFields.forEach(item =>{
+      num.push(parseInt(item.num));
+      mod.push(parseInt(item.mod));
+      m = m * item.mod; 
+      M.push(1);
+    });
+    
+    for(let i=0; i<inputFields.length; i++){
+      for(let j=0; j<inputFields.length; j++){
+        if(j!==i){
+          M[i] = M[i]*mod[j];
+        }
+      }
+    }
+
+    for(let i=0; i<inputFields.length; i++){
+      y.push(modInverse(M[i], mod[i]));
+      x += num[i]*M[i]*y[i];
+    }
+
+    setResults({show: true, x:x%m, m: m, a: displayArray(num), M: displayArray(M), y: displayArray(y)});
+  }
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    handleCRT();
+  };
 
   return (
     <Container>
@@ -94,6 +145,21 @@ function App() {
           onClick={handleSubmit}
         >Submit</Button>
       </form>
+      <div>
+        <h1>Result :</h1>
+        <h4>x ≡ &Sigma;a<sub>i</sub>M<sub>i</sub>y<sub>i</sub> (mod m)</h4>
+        {results.show === true ?
+          (<div>
+            <p>m = {results.m}</p>
+            <p>a<sub>i</sub> = [{results.a.map((number) => <span>{number}</span>)}]</p>
+            <p>M<sub>i</sub> = {results.M.map((number) => number)}</p>
+           <p>y<sub>i</sub> = {results.y.map((number) => number)}</p>
+          </div>) : null
+        }
+        {results.show === true ?
+          <h4>x ≡ {results.x} (mod {results.m}) </h4> :null
+        }
+      </div>
     </Container>
   );
 }
