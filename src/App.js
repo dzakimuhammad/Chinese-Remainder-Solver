@@ -7,6 +7,7 @@ import RemoveIcon from '@material-ui/icons/Remove';
 import AddIcon from '@material-ui/icons/Add';
 
 import { makeStyles } from '@material-ui/core/styles';
+import { display_m, display_a, display_M, display_y, display_x } from './displayUtil';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -56,19 +57,6 @@ function App() {
         return x;
   }
 
-  const displayArray = (arr) =>{
-    let displayArr = [];
-    for(let i=0; i<arr.length; i++){
-      if(i !== arr.length-1){
-        displayArr.push(arr[i].toString()+",");
-      }
-      else{
-        displayArr.push(arr[i].toString())
-      }
-    }
-    return displayArr;
-  }
-
   const handleCRT = () => {
     let m = 1;
     let num = [];
@@ -97,7 +85,7 @@ function App() {
       x += num[i]*M[i]*y[i];
     }
 
-    setResults({show: true, x:x%m, m: m, a: displayArray(num), M: displayArray(M), y: displayArray(y)});
+    setResults({show: true, x:display_x(num, M, y, x), m: display_m(mod), a: display_a(num), M: display_M(mod, M), y: display_y(mod, M, y)});
   }
 
   const handleSubmit = (e) => {
@@ -147,17 +135,21 @@ function App() {
       </form>
       <div>
         <h1>Result :</h1>
-        <h4>x ≡ &Sigma;a<sub>i</sub>M<sub>i</sub>y<sub>i</sub> (mod m)</h4>
+        <h3>x ≡ &Sigma;a<sub>i</sub>M<sub>i</sub>y<sub>i</sub> (mod m)</h3>
         {results.show === true ?
           (<div>
-            <p>m = {results.m}</p>
-            <p>a<sub>i</sub> = [{results.a.map((number) => <span>{number}</span>)}]</p>
-            <p>M<sub>i</sub> = {results.M.map((number) => number)}</p>
-           <p>y<sub>i</sub> = {results.y.map((number) => number)}</p>
+            <p>m = {results.m.map((string) => string)}</p>
+            <p>{results.a.map((string) => string)}</p>
+            <p>{results.M.map((string) => string)}</p>
+           <p>{results.y.map((string) => string)}</p>
           </div>) : null
         }
+        <br></br>
         {results.show === true ?
-          <h4>x ≡ {results.x} (mod {results.m}) </h4> :null
+          <div>
+            <p>{results.x.map((string) => string)}</p>
+            <h3>x ≡ {results.x[results.x.length-1] % results.m[results.m.length-1]} (mod {results.m[results.m.length-1]}) </h3>
+          </div> :null
         }
       </div>
     </Container>
