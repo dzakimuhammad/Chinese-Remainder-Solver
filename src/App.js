@@ -90,7 +90,17 @@ function App() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    handleCRT();
+    let process = true;
+    inputFields.forEach((input) => {
+      if(input.num === '' || input.mod === ''){
+        process = false;
+        alert("Tidak boleh ada input yang kosong!");
+      }
+    })
+
+    if(process){
+      handleCRT();
+    }
   };
 
   return (
